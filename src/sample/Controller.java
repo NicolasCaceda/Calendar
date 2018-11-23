@@ -2,30 +2,24 @@ package sample;
 
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.MonthDay;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
-import javax.tools.Tool;
+
 
 
 public class Controller {
@@ -34,20 +28,6 @@ public class Controller {
   public GridPane daysOfTheWeek;
   @FXML
   public Label yearLabel;
-  @FXML
-  public Label sunday;
-  @FXML
-  public Label monday;
-  @FXML
-  public Label tuesday;
-  @FXML
-  public Label wednesday;
-  @FXML
-  public Label thursday;
-  @FXML
-  public Label friday;
-  @FXML
-  public Label saturday;
 
   private LocalDate today;
   private LocalDate date;
@@ -62,12 +42,6 @@ public class Controller {
   private Tooltip gameInfoToolTip;
 
   @FXML
-  private Button nextMonth;
-
-  @FXML
-  public Button prevMonth;
-
-  @FXML
   private GridPane calendarView;
 
   @FXML
@@ -78,29 +52,10 @@ public class Controller {
 
     today = LocalDate.now();
     date = LocalDate.now();
-    setDaysOfTheWeek();
     setYearMonthAndDay();
     gamesToHashMap();
     populateGridPane();
 
-  }
-
-  private void setDaysOfTheWeek() {
-    daysOfTheWeek.getChildren().clear();
-    sunday.setText(DayOfWeek.SUNDAY.toString());
-    monday.setText(DayOfWeek.MONDAY.toString());
-    tuesday.setText(DayOfWeek.TUESDAY.toString());
-    wednesday.setText(DayOfWeek.WEDNESDAY.toString());
-    thursday.setText(DayOfWeek.THURSDAY.toString());
-    friday.setText(DayOfWeek.FRIDAY.toString());
-    saturday.setText(DayOfWeek.SUNDAY.toString());
-    daysOfTheWeek.getChildren().add(sunday);
-    daysOfTheWeek.getChildren().add(monday);
-    daysOfTheWeek.getChildren().add(tuesday);
-    daysOfTheWeek.getChildren().add(wednesday);
-    daysOfTheWeek.getChildren().add(thursday);
-    daysOfTheWeek.getChildren().add(friday);
-    daysOfTheWeek.getChildren().add(saturday);
   }
 
   public void goToNextMonth(MouseEvent mouseEvent) {
@@ -157,7 +112,6 @@ public class Controller {
 
           if (gameDataMap
               .containsKey(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
-            System.out.println(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
             StringTokenizer st = new StringTokenizer(
                 gameDataMap.get(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber),
                 "|");
@@ -203,7 +157,6 @@ public class Controller {
         value = value + "|" + bReader.readLine();
         gameDataMap.put(key, value);
       }
-      System.out.println(gameDataMap);
       bReader.close();
       fReader.close();
     } catch (IOException ex) {
