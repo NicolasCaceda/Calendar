@@ -20,9 +20,12 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.TextAlignment;
+import javax.tools.Tool;
 
 
 public class Controller {
@@ -55,6 +58,8 @@ public class Controller {
 
 
   private Map<String, String> gameDataMap = new HashMap<>();
+
+  private Tooltip gameInfoToolTip;
 
   @FXML
   private Button nextMonth;
@@ -150,16 +155,6 @@ public class Controller {
           calendarView.add(day, col, row);
           GridPane.setValignment(day, VPos.TOP);
 
-          /*
-          final int listenCol = col;
-          final int listenRow = row;
-          cell.setOnMouseClicked(e ->
-              System.out.println(listenRow + ", " + listenCol)
-          );
-          */
-
-          calendarView.add(cell, col, row);
-
           if (gameDataMap
               .containsKey(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
             System.out.println(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
@@ -169,6 +164,7 @@ public class Controller {
 
             Label gameLabel = new Label(st.nextToken());
             calendarView.add(gameLabel, col, row);
+            gameLabel.getTooltip();
             GridPane.setValignment(gameLabel, VPos.CENTER);
             GridPane.setHalignment(gameLabel, HPos.CENTER);
 
@@ -176,7 +172,18 @@ public class Controller {
             calendarView.add(scoreLabel, col, row);
             GridPane.setValignment(scoreLabel, VPos.BOTTOM);
             GridPane.setHalignment(scoreLabel, HPos.CENTER);
+
+            cell.setOnMouseEntered(e -> {
+                  gameInfoToolTip = new Tooltip();
+                  gameInfoToolTip.setText(gameLabel.getText() +
+                      '\n' + scoreLabel.getText());
+                  gameInfoToolTip.setTextAlignment(TextAlignment.CENTER);
+                  Tooltip.install(cell, gameInfoToolTip);
+                }
+            );
+
           }
+          calendarView.add(cell, col, row);
           dayAsNumber++;
         }
       }
