@@ -1,6 +1,8 @@
 package sample;
 
 
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,6 +11,9 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.DayOfWeek;
 import java.time.MonthDay;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -41,15 +46,16 @@ public class Controller {
   @FXML
   public Label saturday;
 
-
+  private LocalDate today;
   private LocalDate date;
   private int daysInAMonth;
   private Month currentMonth;
   private int currentYear;
   private int currentDay;
   private int dayAsNumber;
-  private Label gameLabel;
-  private Label scoreLabel;
+
+
+  private Map<String, String> gameDataMap = new HashMap<>();
 
   private FileReader fReader;
   private BufferedReader bReader;
@@ -67,9 +73,12 @@ public class Controller {
 
   @FXML
   public void initialize() {
+
+    today = LocalDate.now();
     date = LocalDate.now();
     setDaysOfTheWeek();
     setYearMonthAndDay();
+    gamesToHashMap();
     populateGridPane();
 
   }
@@ -114,49 +123,82 @@ public class Controller {
     monthLabel.setText(currentMonth.toString());
   }
 
-  private void populateGridPane(){
+  private void populateGridPane() {
+    boolean executed = false;
+    int col;
     calendarView.getChildren().clear();
     dayAsNumber = 1;
-    try {
-      fReader = new FileReader("Games.txt");
-      bReader = new BufferedReader(fReader);
-    } catch (IOException ex) {
-      System.out.println("Error no games");
-      ex.printStackTrace();
-    }
-    for (int row = 0; row < 5; row++) {
-      for (int col = 0; col < 7; col++) {
-        checkForGames(row, col);
 
-        Pane cell = new Pane();
-        cell.setPrefSize(calendarView.getWidth(), calendarView.getPrefHeight());
-        cell.setStyle("-fx-border-color: black; "
-            + "-fx-border-radius: .2");
-        if (dayAsNumber == currentDay) {
-          cell.setStyle("-fx-border-color: red; "
-              + "-fx-border-radius: .2");
-        }
+    for (int row = 0; row < 6; row++) {
+      if (!executed) {
+        col = date.with(firstDayOfMonth()).getDayOfWeek().getValue() % 7;
+        executed = true;
+      } else {
+        col = 0;
+      }
+      for (; col < 7; col++) {
 
         if (dayAsNumber <= daysInAMonth) {
+
+          Pane cell = new Pane();
+          cell.setPrefSize(calendarView.getWidth(), calendarView.getPrefHeight());
+          cell.setStyle("-fx-border-color: black; "
+              + "-fx-border-radius: .2");
+          if (dayAsNumber == currentDay && currentMonth == today.getMonth()) {
+            cell.setStyle("-fx-border-color: red; "
+                + "-fx-border-radius: .2");
+          }
 
           Label day = new Label("" + dayAsNumber++);
           calendarView.add(day, col, row);
           GridPane.setValignment(day, VPos.TOP);
+
+          /*
           final int listenCol = col;
           final int listenRow = row;
           cell.setOnMouseClicked(e ->
               System.out.println(listenRow + ", " + listenCol)
           );
+          */
           calendarView.add(cell, col, row);
-        } else {
-          Label day = new Label("");
-          calendarView.add(day, col, row);
+
+          if(gameDataMap.containsKey(currentYear + "-" +currentMonth.getValue()+ "-" + dayAsNumber)){
+            StringTokenizer st = new StringTokenizer(gameDataMap.get(currentYear + "-" +currentMonth.getValue()+ "-" + dayAsNumber), "|");
+            Label gameLabel = new Label(st.nextToken());
+            Label scoreLabel = new Label(st.nextToken());
+            calendarView.add(gameLabel, col, row);
+            GridPane.setValignment(gameLabel, VPos.CENTER);
+            GridPane.setHalignment(gameLabel, HPos.CENTER);
+            calendarView.add(scoreLabel, col, row);
+            GridPane.setValignment(scoreLabel, VPos.BOTTOM);
+            GridPane.setHalignment(scoreLabel, HPos.CENTER);
+          }
 
         }
       }
     }
   }
 
+  private void gamesToHashMap() {
+    try {
+      fReader = new FileReader("Games.txt");
+      bReader = new BufferedReader(fReader);
+
+      String key;
+      String value = null;
+      while ((key = bReader.readLine()) != null) {
+        value = bReader.readLine();
+        value = value + "|" + bReader.readLine();
+        gameDataMap.put(key, value);
+      }
+    } catch (IOException ex) {
+      System.out.println("Error no games");
+      ex.printStackTrace();
+    }
+
+  }
+
+  /*
   private void checkForGames(int row, int col) {
     String tempString;
     try {
@@ -174,8 +216,10 @@ public class Controller {
       }
       //tempString = bReader.readLine();
       boolean found = false;
+      //System.out.println(tempString + "||"+ currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
       if ((tempString).equals(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
-        //System.out.println(tempString + " IS READ");
+        //System.out.println(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
+        System.out.println(tempString + " IS READ");
         //System.out.println(bReader.readLine());
         String teamVsTeam = bReader.readLine();
         String gameScore = bReader.readLine();
@@ -184,17 +228,19 @@ public class Controller {
         calendarView.add(gameLabel, col, row);
         GridPane.setValignment(gameLabel, VPos.CENTER);
         GridPane.setHalignment(gameLabel, HPos.CENTER);
+        gameLabel.setWrapText(true);
         calendarView.add(scoreLabel, col, row);
         GridPane.setValignment(scoreLabel, VPos.BOTTOM);
         GridPane.setHalignment(scoreLabel, HPos.CENTER);
+        scoreLabel.setWrapText(true);
         //System.out.println(bReader.readLine());
-        bReader.mark(1);
+        bReader.mark(1000);
       }
     } catch (IOException | NullPointerException ex) {
       tempString = null;
     }
   }
-
+*/
 /*
   private void populateGridPane(){
     calendarView.getChildren().clear();
@@ -223,5 +269,4 @@ public class Controller {
     System.out.println(colIndex);
   }
 */
-//files stuff
 }
