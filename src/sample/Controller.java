@@ -7,9 +7,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.DayOfWeek;
 import java.time.MonthDay;
 import java.util.HashMap;
 import java.util.Map;
@@ -166,11 +166,13 @@ public class Controller {
             StringTokenizer st = new StringTokenizer(
                 gameDataMap.get(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber),
                 "|");
+
             Label gameLabel = new Label(st.nextToken());
-            Label scoreLabel = new Label(st.nextToken());
             calendarView.add(gameLabel, col, row);
             GridPane.setValignment(gameLabel, VPos.CENTER);
             GridPane.setHalignment(gameLabel, HPos.CENTER);
+
+            Label scoreLabel = new Label(st.nextToken());
             calendarView.add(scoreLabel, col, row);
             GridPane.setValignment(scoreLabel, VPos.BOTTOM);
             GridPane.setHalignment(scoreLabel, HPos.CENTER);
@@ -186,8 +188,8 @@ public class Controller {
       FileReader fReader = new FileReader("Games.txt");
       BufferedReader bReader = new BufferedReader(fReader);
 
-      String key = null;
-      String value = null;
+      String key;
+      String value;
 
       while ((key = bReader.readLine()) != null) {
         value = bReader.readLine();
@@ -195,10 +197,11 @@ public class Controller {
         gameDataMap.put(key, value);
       }
       System.out.println(gameDataMap);
+      bReader.close();
+      fReader.close();
     } catch (IOException ex) {
       System.out.println("Error no games");
       ex.printStackTrace();
     }
-
   }
 }
