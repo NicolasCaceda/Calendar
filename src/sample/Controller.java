@@ -1,6 +1,9 @@
 package sample;
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import javafx.fxml.FXML;
@@ -24,7 +27,11 @@ public class Controller {
   private int daysInAMonth;
   private Month currentMonth;
   private int currentYear;
+  private int currentDay;
+  private int dayAsNumber;
 
+  FileReader fReader;
+  BufferedReader bReader;
   @FXML
   private Button nextMonth;
 
@@ -40,26 +47,27 @@ public class Controller {
   @FXML
   public void initialize() {
     date = LocalDate.now();
-    setMonthAndyear();
+    setYearMonthAndDay();
     populateGridPane();
 
   }
 
   public void goToNextMonth(MouseEvent mouseEvent) {
     date = date.plusMonths(1);
-    setMonthAndyear();
+    setYearMonthAndDay();
     populateGridPane();
   }
 
   public void goToPrevMonth(MouseEvent mouseEvent) {
     date = date.minusMonths(1);
-    setMonthAndyear();
+    setYearMonthAndDay();
     populateGridPane();
   }
 
-  private void setMonthAndyear() {
+  private void setYearMonthAndDay() {
     currentYear = date.getYear();
     currentMonth = date.getMonth();
+    currentDay = date.getDayOfMonth();
     daysInAMonth = date.lengthOfMonth();
 
     yearLabel.setText("" + currentYear);
@@ -68,23 +76,31 @@ public class Controller {
 
   private void populateGridPane() {
     calendarView.getChildren().clear();
-    int number = 1;
+    dayAsNumber = 1;
+    try {
+      fReader = new FileReader("Games.txt");
+      bReader = new BufferedReader(fReader);
+    } catch (IOException ex) {
+      System.out.println("Error no games");
+      ex.printStackTrace();
+    }
     for (int row = 0; row < 5; row++) {
       for (int col = 0; col < 7; col++) {
+        checkForGames();
         Pane cell = new Pane();
         cell.setPrefSize(calendarView.getWidth(), calendarView.getPrefHeight());
         cell.setStyle("-fx-border-color: black; "
-            + "-fx-border-radius: .2" );
+            + "-fx-border-radius: .2");
 
-        if (number <= daysInAMonth) {
+        if (dayAsNumber <= daysInAMonth) {
 
-          Label day = new Label("" + number++);
+          Label day = new Label("" + dayAsNumber++);
           calendarView.add(day, col, row);
           GridPane.setValignment(day, VPos.TOP);
           final int listenCol = col;
           final int listenRow = row;
           cell.setOnMouseClicked(e ->
-            System.out.println(listenRow + ", " + listenCol)
+              System.out.println(listenRow + ", " + listenCol)
           );
           calendarView.add(cell, col, row);
         } else {
@@ -93,6 +109,34 @@ public class Controller {
 
         }
       }
+    }
+  }
+
+  private void checkForGames() {
+    String tempString;
+    try {
+      tempString = bReader.readLine();
+      try {
+        if (!tempString.matches("^[0-9][0-9][0-9][0-9](-)[0-9][0-9](-)+[0-9]?[0-9]")) {
+          //System.out.println("Before :" + tempString);
+          bReader.reset();
+          tempString = bReader.readLine();
+          //System.out.println("after : " + tempString);
+        }
+      } catch (NullPointerException ex) {
+        bReader.close();
+        fReader.close();
+      }
+      //tempString = bReader.readLine();
+      boolean found = false;
+      if ((tempString).equals(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
+        System.out.println(tempString + " IS READ");
+        System.out.println(bReader.readLine());
+        System.out.println(bReader.readLine());
+        bReader.mark(1);
+      }
+    } catch (IOException | NullPointerException ex) {
+      tempString = null;
     }
   }
 
@@ -124,5 +168,5 @@ public class Controller {
     System.out.println(colIndex);
   }
 */
-  //files stuff
+//files stuff
 }
