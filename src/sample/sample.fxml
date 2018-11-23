@@ -31,9 +31,9 @@
   </GridPane>
   <Label fx:id="yearLabel" layoutX="86.0" layoutY="27.0" text="YEAR"/>
   <Label fx:id="monthLabel" layoutX="278.0" layoutY="27.0" text="MONTH"/>
-  <Button fx:id="nextMonth" layoutX="545.0" layoutY="32.0" mnemonicParsing="false"
+  <Button layoutX="545.0" layoutY="32.0" mnemonicParsing="false"
     onMouseClicked="#goToNextMonth" text="Next"/>
-  <Button fx:id="prevMonth" layoutX="14.0" layoutY="32.0" mnemonicParsing="false"
+  <Button layoutX="14.0" layoutY="32.0" mnemonicParsing="false"
     onMouseClicked="#goToPrevMonth" text="Prev"/>
 
   <GridPane fx:id="calendarView" layoutX="6.0" layoutY="103.0" prefHeight="380.0"
