@@ -52,13 +52,10 @@ public class Controller {
   private Month currentMonth;
   private int currentYear;
   private int currentDay;
-  private int dayAsNumber;
 
 
   private Map<String, String> gameDataMap = new HashMap<>();
 
-  private FileReader fReader;
-  private BufferedReader bReader;
   @FXML
   private Button nextMonth;
 
@@ -127,7 +124,7 @@ public class Controller {
     boolean executed = false;
     int col;
     calendarView.getChildren().clear();
-    dayAsNumber = 1;
+    int dayAsNumber = 1;
 
     for (int row = 0; row < 6; row++) {
       if (!executed) {
@@ -149,7 +146,7 @@ public class Controller {
                 + "-fx-border-radius: .2");
           }
 
-          Label day = new Label("" + dayAsNumber++);
+          Label day = new Label("" + dayAsNumber);
           calendarView.add(day, col, row);
           GridPane.setValignment(day, VPos.TOP);
 
@@ -160,10 +157,15 @@ public class Controller {
               System.out.println(listenRow + ", " + listenCol)
           );
           */
+
           calendarView.add(cell, col, row);
 
-          if(gameDataMap.containsKey(currentYear + "-" +currentMonth.getValue()+ "-" + dayAsNumber)){
-            StringTokenizer st = new StringTokenizer(gameDataMap.get(currentYear + "-" +currentMonth.getValue()+ "-" + dayAsNumber), "|");
+          if (gameDataMap
+              .containsKey(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
+            System.out.println(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
+            StringTokenizer st = new StringTokenizer(
+                gameDataMap.get(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber),
+                "|");
             Label gameLabel = new Label(st.nextToken());
             Label scoreLabel = new Label(st.nextToken());
             calendarView.add(gameLabel, col, row);
@@ -173,7 +175,7 @@ public class Controller {
             GridPane.setValignment(scoreLabel, VPos.BOTTOM);
             GridPane.setHalignment(scoreLabel, HPos.CENTER);
           }
-
+          dayAsNumber++;
         }
       }
     }
@@ -181,92 +183,22 @@ public class Controller {
 
   private void gamesToHashMap() {
     try {
-      fReader = new FileReader("Games.txt");
-      bReader = new BufferedReader(fReader);
+      FileReader fReader = new FileReader("Games.txt");
+      BufferedReader bReader = new BufferedReader(fReader);
 
-      String key;
+      String key = null;
       String value = null;
+
       while ((key = bReader.readLine()) != null) {
         value = bReader.readLine();
         value = value + "|" + bReader.readLine();
         gameDataMap.put(key, value);
       }
+      System.out.println(gameDataMap);
     } catch (IOException ex) {
       System.out.println("Error no games");
       ex.printStackTrace();
     }
 
   }
-
-  /*
-  private void checkForGames(int row, int col) {
-    String tempString;
-    try {
-      tempString = bReader.readLine();
-      try {
-        if (!tempString.matches("^[0-9][0-9][0-9][0-9](-)[0-9][0-9](-)+[0-9]?[0-9]")) {
-          //System.out.println("Before :" + tempString);
-          bReader.reset();
-          tempString = bReader.readLine();
-          //System.out.println("after : " + tempString);
-        }
-      } catch (NullPointerException ex) {
-        bReader.close();
-        fReader.close();
-      }
-      //tempString = bReader.readLine();
-      boolean found = false;
-      //System.out.println(tempString + "||"+ currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
-      if ((tempString).equals(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
-        //System.out.println(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber);
-        System.out.println(tempString + " IS READ");
-        //System.out.println(bReader.readLine());
-        String teamVsTeam = bReader.readLine();
-        String gameScore = bReader.readLine();
-        gameLabel = new Label(teamVsTeam);
-        scoreLabel = new Label(gameScore);
-        calendarView.add(gameLabel, col, row);
-        GridPane.setValignment(gameLabel, VPos.CENTER);
-        GridPane.setHalignment(gameLabel, HPos.CENTER);
-        gameLabel.setWrapText(true);
-        calendarView.add(scoreLabel, col, row);
-        GridPane.setValignment(scoreLabel, VPos.BOTTOM);
-        GridPane.setHalignment(scoreLabel, HPos.CENTER);
-        scoreLabel.setWrapText(true);
-        //System.out.println(bReader.readLine());
-        bReader.mark(1000);
-      }
-    } catch (IOException | NullPointerException ex) {
-      tempString = null;
-    }
-  }
-*/
-/*
-  private void populateGridPane(){
-    calendarView.getChildren().clear();
-    int number = 1;
-    for(int row = 0; row < 5; row++){
-      for (int col = 0; col < 7; col++){
-        if (number < daysInAMonth){
-          Label day =new Label("" + number++);
-          calendarView.add(day, col,row);
-          GridPane.setValignment(day, VPos.TOP);
-          System.out.println("set " + row + ", " + col);
-        }
-        else{
-          Label day =new Label("");
-          calendarView.add(day, col,row);
-        }
-      }
-    }
-  }
-  */
-/*
-  public void printData(MouseEvent mouseEvent) {
-    Node source = (Node)mouseEvent.getSource();
-    Integer colIndex = calendarView.getColumnIndex(source);
-    Integer rowIndex = GridPane.getRowIndex(source);
-    System.out.println(colIndex);
-  }
-*/
 }
