@@ -4,9 +4,13 @@ package sample;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.DayOfWeek;
+import java.time.MonthDay;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -22,6 +26,21 @@ public class Controller {
   public GridPane daysOfTheWeek;
   @FXML
   public Label yearLabel;
+  @FXML
+  public Label sunday;
+  @FXML
+  public Label monday;
+  @FXML
+  public Label tuesday;
+  @FXML
+  public Label wednesday;
+  @FXML
+  public Label thursday;
+  @FXML
+  public Label friday;
+  @FXML
+  public Label saturday;
+
 
   private LocalDate date;
   private int daysInAMonth;
@@ -29,9 +48,11 @@ public class Controller {
   private int currentYear;
   private int currentDay;
   private int dayAsNumber;
+  private Label gameLabel;
+  private Label scoreLabel;
 
-  FileReader fReader;
-  BufferedReader bReader;
+  private FileReader fReader;
+  private BufferedReader bReader;
   @FXML
   private Button nextMonth;
 
@@ -47,9 +68,28 @@ public class Controller {
   @FXML
   public void initialize() {
     date = LocalDate.now();
+    setDaysOfTheWeek();
     setYearMonthAndDay();
     populateGridPane();
 
+  }
+
+  private void setDaysOfTheWeek() {
+    daysOfTheWeek.getChildren().clear();
+    sunday.setText(DayOfWeek.SUNDAY.toString());
+    monday.setText(DayOfWeek.MONDAY.toString());
+    tuesday.setText(DayOfWeek.TUESDAY.toString());
+    wednesday.setText(DayOfWeek.WEDNESDAY.toString());
+    thursday.setText(DayOfWeek.THURSDAY.toString());
+    friday.setText(DayOfWeek.FRIDAY.toString());
+    saturday.setText(DayOfWeek.SUNDAY.toString());
+    daysOfTheWeek.getChildren().add(sunday);
+    daysOfTheWeek.getChildren().add(monday);
+    daysOfTheWeek.getChildren().add(tuesday);
+    daysOfTheWeek.getChildren().add(wednesday);
+    daysOfTheWeek.getChildren().add(thursday);
+    daysOfTheWeek.getChildren().add(friday);
+    daysOfTheWeek.getChildren().add(saturday);
   }
 
   public void goToNextMonth(MouseEvent mouseEvent) {
@@ -74,7 +114,7 @@ public class Controller {
     monthLabel.setText(currentMonth.toString());
   }
 
-  private void populateGridPane() {
+  private void populateGridPane(){
     calendarView.getChildren().clear();
     dayAsNumber = 1;
     try {
@@ -86,11 +126,16 @@ public class Controller {
     }
     for (int row = 0; row < 5; row++) {
       for (int col = 0; col < 7; col++) {
-        checkForGames();
+        checkForGames(row, col);
+
         Pane cell = new Pane();
         cell.setPrefSize(calendarView.getWidth(), calendarView.getPrefHeight());
         cell.setStyle("-fx-border-color: black; "
             + "-fx-border-radius: .2");
+        if (dayAsNumber == currentDay) {
+          cell.setStyle("-fx-border-color: red; "
+              + "-fx-border-radius: .2");
+        }
 
         if (dayAsNumber <= daysInAMonth) {
 
@@ -112,7 +157,7 @@ public class Controller {
     }
   }
 
-  private void checkForGames() {
+  private void checkForGames(int row, int col) {
     String tempString;
     try {
       tempString = bReader.readLine();
@@ -130,9 +175,19 @@ public class Controller {
       //tempString = bReader.readLine();
       boolean found = false;
       if ((tempString).equals(currentYear + "-" + currentMonth.getValue() + "-" + dayAsNumber)) {
-        System.out.println(tempString + " IS READ");
-        System.out.println(bReader.readLine());
-        System.out.println(bReader.readLine());
+        //System.out.println(tempString + " IS READ");
+        //System.out.println(bReader.readLine());
+        String teamVsTeam = bReader.readLine();
+        String gameScore = bReader.readLine();
+        gameLabel = new Label(teamVsTeam);
+        scoreLabel = new Label(gameScore);
+        calendarView.add(gameLabel, col, row);
+        GridPane.setValignment(gameLabel, VPos.CENTER);
+        GridPane.setHalignment(gameLabel, HPos.CENTER);
+        calendarView.add(scoreLabel, col, row);
+        GridPane.setValignment(scoreLabel, VPos.BOTTOM);
+        GridPane.setHalignment(scoreLabel, HPos.CENTER);
+        //System.out.println(bReader.readLine());
         bReader.mark(1);
       }
     } catch (IOException | NullPointerException ex) {
