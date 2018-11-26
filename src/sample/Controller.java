@@ -101,7 +101,7 @@ public class Controller {
           cell.setPrefSize(calendarView.getWidth(), calendarView.getPrefHeight());
           cell.setStyle("-fx-border-color: black; "
               + "-fx-border-radius: .2");
-          if (dayAsNumber == currentDay && currentMonth == today.getMonth()) {
+          if (dayAsNumber == currentDay && currentMonth == today.getMonth() && currentYear == today.getYear()) {
             cell.setStyle("-fx-border-color: red; "
                 + "-fx-border-radius: .2");
           }
